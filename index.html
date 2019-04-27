@@ -29,6 +29,292 @@
 					### その６（最終回）
 					#### 講師:USP友の会 鳥海秀一
 				</section>
+				<section data-markdown>
+					#### 講師： 鳥海秀一
+					* USP友の会の古参会員
+					* シェル芸勉強会午前の部をよく担当
+				</section>
+				<section data-markdown>
+					### 前回までの振り返り
+				</section>
+				<section data-markdown>
+					### なぜ文字コード？
+					* シェル芸で扱うのは主にテキストストリーム
+					* テキストストリームの構成要素は文字コード
+					* すなわち文字コードはシェル芸の基本
+					* 午前の部は初心者向き勉強会
+					* 初心者が勉強すべきなのは基本
+				</section>
+				<section data-markdown>
+					### 文字コードを学ぶ利点
+					* ずっと役に立つ知識が手に入る
+					* コマンドの使い方を学ぶ素材として優れいてる
+						* 文字コードは単なる整数値
+						* データセットが既に登録済
+						* 結果を文字（フォント）としてすぐに確認できる
+				</section>
+				<section data-markdown>
+					### 第１回目で解説したコマンド
+					* locale
+					* iconv
+					* 文字→数値変換コマンド
+					* 数値→文字変換コマンド
+					* 基数変換コマンド
+				</section>
+				<section data-markdown>
+					### 第２回目で解説した文字コード
+					* EBCDICコード
+					* ASCIIコード
+					* ISO/IEC 646
+					* ISO/IEC 2022
+					* ISO/IEC 8859
+					* JIS X 0201
+					* JIS X 0208
+					* EUC_JP
+				</section>
+				<section data-markdown>
+					### 第３回目で解説した文字コード
+					* SHIFT_JIS
+				</section>
+				<section data-markdown>
+					### 第４回目で解説したUnicodeトピック
+					* Unicode用語解説（UCSとUTF）
+					* Unicodeの基本原則
+						* 文字コードはすべて16ビットで表現する
+						* グリフまでは扱わない
+						* 漢字のように異なる言語間で重複している文字は統一する
+						* 動的な合成を可能にする
+						* 既存の文字コードとの間で可逆変換できるようにする
+				</section>
+				<section data-markdown>
+					### 第５回目で解説したUnicodeトピック
+					* Unicodeの正規化
+					* Unicode Character Database (UCD)
+				</section>
+				<section data-markdown>
+					### 講師の感想
+					* Unicodeにおいて、結合文字列はUnicodeの傍流ではなく本流
+					* Unicodeは、文字コード集合ではなく文字の部品コード集合と考えた方が良い
+					* 結合文字列の属性を仮に闇とすると世界は闇落ちしたと考えて良い
+					* 馴染みがないため忌避されているが、結合文字列には慣れるしか選択肢がない
+				</section>
+				<section data-markdown>
+					## 以上
+				</section>
+				<section data-markdown>
+					### シェルで文字コードに触れてみる
+					### その６（最終回）
+				</section>
+				<section data-markdown>
+					### 本日のアジェンダ
+					* 結合文字列とは
+					* 結合文字列の問題点
+					* 書記素クラスタ
+					* 結合文字列の種類
+				</section>
+				<section data-markdown>
+					### 結合文字列とは
+					* １つの文字に対応づけられた複数のUnicodeコードポイントシーケンス
+					* 例えば、Unicodeの「ポ」には以下の２種類がある（後者が結合文字列）
+						* U+30DD
+						* U+30DB, U+309A
+				</section>
+				<section data-markdown>
+					### 結合文字列の問題点
+					* 同じ文字が単純なビットの比較では異なる文字と判定される場合がある
+					* １文字の判定が難しい
+				</section>
+				<section data-markdown>
+					### 問題点の確認
+					* echo おかしがすきすきすがしかお | rev
+					* echo おかしがすきすきすがしかお | uconv -x NFD | rev
+					* shuf -r -n10 -e おかし{が,$'か\U3099'}すきすきす{が,$'か\U3099'}しかお
+				</section>
+				<section data-markdown>
+					### Unicodeが提供する解決策
+					* Unicodeの正規化
+					* 書記素クラスタ
+				</section>
+				<section data-markdown>
+					### 書記素クラスタ
+					* ユーザが知覚する1文字を近似するUnicode規格
+					* ユーザの要求に合わせてカスタマイズすることが推奨されている
+					* Unicode テクニカルレポート #29 に記載
+					* 正規表現\X（大文字）が書記素クラスタにマッチする
+				</section>
+				<section data-markdown>
+					### 書記素クラスタの確認
+					* echo おかしがすきすきすがしかお | uconv -x NFD | perl -C -lne 'print for /\X/g'
+					* echo おかしがすきすきすがしかお | uconv -x NFD | perl -C -lne 'print reverse /\X/g'
+				</section>
+				<section data-markdown>
+					### 結合文字列の種類
+					(注：講師独自の分類)
+					* 結合文字追記型
+					* 絵文字修飾シーケンス
+					* 国旗絵文字シーケンス
+					* ZWJシーケンス
+				</section>
+				<section data-markdown>
+					### 結合文字追記型
+					* 「非結合文字（基底文字）＋結合文字」の構造を持つ
+					* 結合文字は続けて幾つでも追加できる
+				</section>
+				<section data-markdown>
+					### ちょっと確認
+					* echo -e '\U30DB\U3099\U309A'
+				</section>
+				<section data-markdown>
+					### 結合文字とは
+					* Unicode一般カテゴリが結合文字である文字
+					* 以下の３種類がある
+						* Mn - Mark, Nonspacing（結合文字，幅なし）
+						* Mc - Mark, Spacing Combining（結合文字，幅あり）
+						* Me - Mark, Enclosing（結合文字，囲み）
+				</section>
+				<section data-markdown>
+					### それぞれを確認
+					* echo -e 'a\U0308\U0304\U0330'
+					* echo -e '\U0930\U093B\U0903'
+					* echo -e '1\U20E3'
+				</section>
+				<section data-markdown>
+					### Unicode一般カテゴリーとは
+					* Unicode文字に与えられた属性の１つ
+					* 大きく以下の７種類がある
+						* Letter - 表音文字、表意文字
+						* Mark - 結合文字
+						* Number - 数字
+						* Punctuation - 句読点
+						* Symbol - 数学記号、通貨記号、絵文字など
+						* Separator - 区切り
+						* Other - その他
+				</section>
+				<section data-markdown>
+					### 全ての結合文字を
+					### 知りたくないですか？
+				</section>
+				<section data-markdown>
+					### 知りたい人はUnicodeコンソーシアム
+					### のホームページに今すぐアクセス
+				</section>
+				<section data-markdown>
+					### UnicodeData.txtをダウンロード
+					* curl -O https:
+					//www.unicode.org/Public/UCD
+					/latest/ucd/UnicodeData.txt
+				</section>
+				<section data-markdown>
+					### UnicodeData.txtの構造
+					* 15の項目をもつテキストファイル
+					* 項目のセパレータはセミコロン
+					* 結合文字に関連する項目は以下の通り
+						* 第１項目 - Unicodeコードポイント
+						* 第２項目 - Unicodeコード名
+						* 第３項目 - 一般カテゴリ
+					* 詳しく知りたい方は https://www.unicode.org/Public/5.1.0/ucd/UCD.html を参照
+				</section>
+				<section data-markdown>
+					### 課題
+					* 3種類の結合文字がそれぞれいくつあるか確認しよう
+					* それぞれの結合文字列を作ってみよう
+					* 一般カテゴリが"Me"の結合文字を表示してみよう
+				</section>
+				<section data-markdown>
+					### 異体字セレクタ
+					* それ自身は字形を持たず、非結合文字の字形を変える結合文字
+					* 一般カテゴリでは"Mn"に分類されている
+					* 以下の種類がある
+						* 汎用
+							* 標準化された異体字セレクタ(略称 SVS、U+FE00〜U+FE0F)
+							* 漢字異体字セレクタ(略称 IVS、U+E0100〜U+E01EF)
+						* モンゴル文字用(U+180B〜U+180D)
+				</section>
+				<section data-markdown>
+					### それぞれを確認
+					* echo -e '\U26A0'
+					* echo -e '\U26A0\UFE0F'
+					* echo -e '\UFA19'
+					* echo -e '\U795E'
+					* echo -e '\U795E\UE0100'
+					* echo -e '\U1820'
+					* echo -e '\U1820\U180B'
+				</section>
+				<section data-markdown>
+					### さらに詳しく知るには
+					* SVSについて
+						* https://
+						www.unicode.org/Public/UCD/latest/ucd/
+						StandardizedVariants.txt
+					* IVSについて
+						* https://
+						unicode.org/ivd/data/2017-12-12/
+						IVD_Sequences.txt
+				</section>
+				<section data-markdown>
+					### 異体字が多い漢字を確認
+					* awk -F\; '/^[^#]/{print $1}' IVD_Sequences.txt | uniq | awk '{print $1}' | uniq -c | sort -k1nr | head -10 | while read a b; do echo -e $a $b "\U$b"; done
+				</section>
+				<section data-markdown>
+					### 絵文字修飾シーケンス
+					* 「人の身体の一部を表す絵文字＋絵文字修飾文字」の構造を持つ
+					* 結合文字と違い、基底文字と結合するのは直後の１文字のみ
+					* 絵文字修飾文字は、U+1F3FB〜U+1F3FFの５文字
+				</section>
+				<section data-markdown>
+					### ちょっと確認
+					* echo -e '\U1F44D'
+					* echo -e '\U1F44D\U1F3FB\U1F3FC' | perl -C -lne 'print for /\X/g'
+					* for i in 1F3F{B..F}; do echo -e "\U1F44D\U$i"; done
+				</section>
+				<section data-markdown>
+					### 国旗絵文字シーケンス
+					* 「地域指標文字＋地域指標文字」の構造を持つ
+					* 結合文字と違い、結合するのは直後の１文字のみ
+					* 地域指標文字はアルファベットA〜Zに対応したU+1F1E6〜U+1F1FFの26文字
+					* 国際標準化機構が割り振った２文字の国コードリスト(ISO 3166)に対応した２文字の地域指標文字により、その国の国旗を表示する
+				</section>
+				<section data-markdown>
+					### ちょっと確認
+					* echo 🇯🇵 | grep -o .
+					* for i in {0..25}; do echo -e \\\\U$(printf '%X\n' $((0x1F1E6+i))); done
+					* l=$(for i in {0..25}; do echo -e \\\\U$(printf '%X\n' $((0x1F1E6+i))); done); for x in $l; do for y in $l; do echo -e $x $y $x$y; done; done
+				</section>
+				<section data-markdown>
+					### ZWJシーケンス
+					* 「文字＋ZWJ+文字」の構造を持つ
+					* 「ZWJ+文字」は続けて幾つでも追加できる
+					* ZWJで結合できる文字は規定されている
+					* 絵文字の世界で多用されるようになってきている
+				</section>
+				<section data-markdown>
+					### ZWJとは
+					* ZWJは”ZERO WIDTH JOINER"のことで、U+200Dの文字
+					* ZWJはもともとブラーフミー系文字のような複雑な表記体系の組版において使われる制御文字
+					* 本来ならば接合しない文字の間にZWJを置くと接合した形で表示する
+				</section>
+				<section data-markdown>
+					### ZWJシーケンスの例
+					* echo -e '👱\U200D♀'
+					* echo -e '👨\U200D🍳'
+					* echo -e '👨\U200D🎤'
+					* echo -e '👨\U1F3FB\U200D🎤'
+					* echo -e '👨\U200D👩\U200D👧\U200D👦'
+				</section>
+				<section data-markdown>
+					### さらに詳しく知るには
+					* 絵文字修飾シーケンスについて
+						* https://
+						www.unicode.org/emoji/charts/
+						full-emoji-modifiers.html
+					* ZWJシーケンスについて
+						* https://
+						www.unicode.org/emoji/charts/
+						emoji-zwj-sequences.html
+				</section>
+				<section data-markdown>
+					### ご静聴ありがとうございました
+				</section>
 			</div>
 		</div>
 		<script src="lib/js/head.min.js"></script>
